@@ -20,7 +20,7 @@ version = get_version('oauth2_provider')
 LONG_DESCRIPTION = open('README.rst').read()
 
 setup(
-    name="django-oauth-toolkit",
+    name="django-secured-oauth-toolkit",
     version=version,
     description="OAuth2 goodies for Django",
     long_description=LONG_DESCRIPTION,
