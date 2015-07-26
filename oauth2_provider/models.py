@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.hashers import make_password, check_password
 
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
@@ -122,9 +123,24 @@ class AbstractApplication(models.Model):
 
 
 class Application(AbstractApplication):
-    pass
 
-# Add swappable like this to not break django 1.4 compatibility
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None, force_hash_secret=False):
+        make_pass = False
+        if self.pk:
+            app = Application.objects.get(pk=self.pk)
+            if app.client_secret != self.client_secret:
+                make_pass = True
+        else:
+            make_pass = True
+
+        if make_pass or force_hash_secret:
+            self.client_secret = make_password(self.client_secret)
+
+        return super(AbstractApplication, self).save(force_insert=force_insert, force_update=force_update, using=using,
+                                                     update_fields=update_fields)
+
+
+      # Add swappable like this to not break django 1.4 compatibility
 Application._meta.swappable = 'OAUTH2_PROVIDER_APPLICATION_MODEL'
 
 

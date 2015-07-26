@@ -7,7 +7,9 @@ from datetime import timedelta
 
 from django.utils import timezone
 from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import check_password, make_password
 from django.core.exceptions import ObjectDoesNotExist
+
 from oauthlib.oauth2 import RequestValidator
 
 from .compat import unquote_plus
@@ -96,11 +98,12 @@ class OAuth2Validator(RequestValidator):
 
         if not client_id or not client_secret:
             return False
+        app = self._load_application(client_id, request)
 
-        if self._load_application(client_id, request) is None:
+        if app is None:
             log.debug("Failed body auth: Application %s does not exists" % client_id)
             return False
-        elif request.client.client_secret != client_secret:
+        elif not check_password(str(client_secret), app.client_secret):
             log.debug("Failed body auth: wrong client secret %s" % client_secret)
             return False
         else:
@@ -243,7 +246,7 @@ class OAuth2Validator(RequestValidator):
         """
         Validate both grant_type is a valid string and grant_type is allowed for current workflow
         """
-        assert(grant_type in GRANT_TYPE_MAPPING)  # mapping misconfiguration
+        assert (grant_type in GRANT_TYPE_MAPPING)  # mapping misconfiguration
         return request.client.authorization_grant_type in GRANT_TYPE_MAPPING[grant_type]
 
     def validate_response_type(self, client_id, response_type, client, request, *args, **kwargs):
@@ -288,7 +291,7 @@ class OAuth2Validator(RequestValidator):
             try:
                 RefreshToken.objects.get(token=request.refresh_token).revoke()
             except RefreshToken.DoesNotExist:
-                assert()  # TODO though being here would be very strange, at least log the error
+                assert ()  # TODO though being here would be very strange, at least log the error
 
         expires = timezone.now() + timedelta(seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
         if request.grant_type == 'client_credentials':
