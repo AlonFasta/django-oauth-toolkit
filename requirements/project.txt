@@ -1,0 +1,2 @@
+-r optional.txt
+Django>=1.4
