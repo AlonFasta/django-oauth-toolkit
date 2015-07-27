@@ -5,17 +5,11 @@ from setuptools import setup, find_packages
 import os
 import re
 
-
-def get_version(package):
-    """
-    Return package version as listed in `__version__` in `init.py`.
-    """
-    init_py = open(os.path.join(package, '__init__.py')).read()
-    return re.match("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
-
-
-version = get_version('oauth2_provider')
-
+try:
+    with open(os.path.join(os.path.dirname(__file__), '._version')) as f:
+        version = f.read()
+except IOError:
+    version ="0.1.0"
 
 LONG_DESCRIPTION = open('README.rst').read()
 
@@ -47,6 +41,10 @@ setup(
     url='https://github.com/evonove/django-oauth-toolkit',
     license='BSD',
     packages=find_packages(),
+    package_data = {
+        # If any package contains *.txt or *.rst files, include them:
+        '': ['._version','*.txt', '*.xml', '*.special', '*.json'],
+    },
     include_package_data=True,
     test_suite='runtests',
     install_requires=[
@@ -57,3 +55,5 @@ setup(
     ],
     zip_safe=False,
 )
+
+
