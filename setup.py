@@ -20,7 +20,7 @@ version = get_version('oauth2_provider')
 LONG_DESCRIPTION = open('README.rst').read()
 
 setup(
-    name="django-oauth-toolkit",
+    name="django-secured-oauth-toolkit",
     version=version,
     description="OAuth2 goodies for Django",
     long_description=LONG_DESCRIPTION,
@@ -47,6 +47,10 @@ setup(
     url='https://github.com/evonove/django-oauth-toolkit',
     license='BSD',
     packages=find_packages(),
+    package_data = {
+        # If any package contains *.txt or *.rst files, include them:
+        '': ['._version','*.txt', '*.xml', '*.special', '*.json'],
+    },
     include_package_data=True,
     test_suite='runtests',
     install_requires=[
@@ -57,3 +61,5 @@ setup(
     ],
     zip_safe=False,
 )
+
+
