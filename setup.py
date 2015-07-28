@@ -49,7 +49,7 @@ setup(
     packages=find_packages(),
     package_data = {
         # If any package contains *.txt or *.rst files, include them:
-        '': ['._version','*.txt', '*.xml', '*.special', '*.json'],
+        '': ['*.txt', '*.xml', '*.special', '*.json'],
     },
     include_package_data=True,
     test_suite='runtests',
